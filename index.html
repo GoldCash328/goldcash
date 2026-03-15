@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mini App - Escobar</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #007bff; /* Mavi arxa fon */
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            color: white;
+        }
+
+        /* Şəffaf Pul Animasiyası */
+        .money-rain {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .coin {
+            position: absolute;
+            font-size: 25px;
+            opacity: 0.2; /* Şəffaf görünüş */
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            to {
+                transform: translateY(110vh) rotate(360deg);
+            }
+        }
+
+        /* Giriş Kartı */
+        .container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            padding: 30px;
+            border-radius: 25px;
+            width: 85%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h2 { margin-bottom: 20px; font-weight: 600; }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 12px;
+            border: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 12px;
+            border: none;
+            background: #28a745;
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        button:active { transform: scale(0.98); }
+
+        .footer-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+        }
+
+        .footer-links a {
+            color: #ddd;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="money-rain" id="moneyRain"></div>
+
+    <div class="container">
+        <h2 id="welcomeText">Xoş Gəldiniz</h2>
+        <input type="password" id="pinInput" placeholder="Giriş kodu">
+        <button onclick="login()">Giriş et</button>
+
+        <div class="footer-links">
+            <a href="#" onclick="alert('Qeydiyyat bölməsi tezliklə!')">Qeydiyyat</a>
+            <a href="#" onclick="alert('Dəstək: @admin')">Kodu unutmuşam</a>
+        </div>
+    </div>
+
+    <script>
+        // Telegram WebApp-ı başladırıq
+        const tg = window.Telegram.WebApp;
+        tg.expand(); // Ekranı tam açır
+        tg.ready();
+
+        // İstifadəçi adını Telegram-dan götürürük
+        const user = tg.initDataUnsafe?.user;
+        if (user) {
+            document.getElementById('welcomeText').innerText = `Xoş gəldin, ${user.first_name}`;
+        }
+
+        // Pul yağışı funksiyası
+        function createMoney() {
+            const container = document.getElementById('moneyRain');
+            const icons = ['💵', '💸', '💰', '🪙'];
+            
+            setInterval(() => {
+                const coin = document.createElement('div');
+                coin.className = 'coin';
+                coin.innerText = icons[Math.floor(Math.random() * icons.length)];
+                coin.style.left = Math.random() * 100 + 'vw';
+                coin.style.top = '-50px';
+                coin.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                
+                container.appendChild(coin);
+                
+                setTimeout(() => {
+                    coin.remove();
+                }, 5000);
+            }, 400);
+        }
+
+        // Giriş yoxlaması
+        function login() {
+            const pin = document.getElementById('pinInput').value;
+            if (pin === "1234") { // Nümunə giriş kodu
+                tg.MainButton.setText("GİRİŞ UĞURLUDUR!");
+                tg.MainButton.show();
+                alert("Sistemə daxil oldunuz!");
+            } else {
+                tg.HapticFeedback.notificationOccurred('error'); // Telefonu titrədir
+                alert("Kod səhvdir!");
+            }
+        }
+
+        createMoney();
+    </script>
+</body>
+</html>

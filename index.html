@@ -3,75 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gold Cash Premium</title>
+    <title>Premium Mini App</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
             --bg-color: #0a0e17;
-            --gold: #FFD700;
-            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --primary-color: #FFD700; /* Qızılı rəng */
             --text-color: #ffffff;
+            --text-secondary: #8b9bb4;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --success-color: #28a745;
         }
 
-        body { margin: 0; padding: 20px; font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+        body { margin: 0; padding: 10px; font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); }
 
-        /* Qızılı Başlıq */
-        .gold-header { 
-            text-align: center; font-size: 36px; font-weight: 800; 
-            color: var(--gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-            margin: 20px 0; letter-spacing: 2px;
-        }
+        /* Gold Cash Başlıq */
+        .main-header { text-align: center; color: #FFD700; font-size: 32px; font-weight: bold; margin: 15px 0; text-shadow: 0 0 10px rgba(255,215,0,0.5); }
 
-        /* Ağ Çərçivəli Məlumatlar */
-        .info-box {
-            background: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            padding: 15px; border-radius: 15px; margin-bottom: 12px;
-            display: flex; align-items: center; gap: 15px;
-        }
-        .info-box i { font-size: 22px; color: var(--gold); }
+        /* Məlumat blokları */
+        .info-container { width: 90%; max-width: 400px; margin: 0 auto 20px auto; }
+        .info-box { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.2); padding: 12px; border-radius: 12px; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; font-size: 13px; }
+        .info-box i { color: #FFD700; font-size: 18px; }
 
-        /* Düymə */
-        button {
-            width: 100%; padding: 18px; border-radius: 12px; border: none;
-            background: var(--gold); color: #000; font-weight: bold;
-            cursor: pointer; transition: 0.2s; font-size: 16px;
-        }
-        button:active { transform: scale(0.96); box-shadow: 0 0 15px var(--gold); }
+        /* Əsas Konteyner */
+        .auth-container { position: relative; z-index: 10; width: 90%; max-width: 400px; margin: 0 auto; }
+        .card { background: var(--card-bg); backdrop-filter: blur(20px); padding: 30px 20px; border-radius: 24px; border: 1px solid var(--border-color); text-align: center; }
+        .hidden { display: none !important; }
 
-        /* Qızıl Pul Animasiyası */
-        .gold-rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
-        .g-coin { position: absolute; font-size: 24px; animation: fall linear infinite; color: var(--gold); opacity: 0.3; }
+        /* Inputlar və düymələr */
+        .input-group { position: relative; margin-bottom: 15px; }
+        .input-group input { width: 100%; padding: 14px 14px 14px 40px; border-radius: 12px; border: 1px solid var(--border-color); background: rgba(0,0,0,0.2); color: white; }
+        .btn-primary { width: 100%; padding: 14px; border-radius: 12px; border: none; background: #FFD700; color: black; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .btn-primary:active { transform: scale(0.97); }
+
+        .money-rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .coin { position: absolute; font-size: 20px; color: #FFD700; opacity: 0.3; animation: fall linear infinite; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="gold-rain" id="goldRain"></div>
-    
-    <div class="gold-header">GOLD CASH</div>
+    <div class="money-rain" id="moneyRain"></div>
 
-    <div class="info-box"><i class="fas fa-coins"></i> <span>Gündəlik yatırımla 15% stabil gəlir! 💰</span></div>
-    <div class="info-box"><i class="fas fa-lock"></i> <span>Maliyyə əməliyyatları tam qorunur! 🛡️</span></div>
-    <div class="info-box"><i class="fas fa-user-plus"></i> <span>Hər dost dəvətinə 5% bonus qazan! 🤝</span></div>
-    <div class="info-box"><i class="fas fa-crown"></i> <span>VIP statusla limitləri ikiqat artır! 👑</span></div>
+    <div class="main-header">GOLD CASH</div>
 
-    <button onclick="alert('Yatırım bölməsinə yönləndirilirsiniz...')">YATIRIM ET VƏ QAZAN</button>
+    <div class="info-container">
+        <div class="info-box"><i class="fas fa-percent"></i> Gündəlik balansda 15%-dək passiv gəlir artımı. 📈</div>
+        <div class="info-box"><i class="fas fa-shield-alt"></i> Maliyyə əməliyyatlarınız tam qorunur. 🛡️</div>
+        <div class="info-box"><i class="fas fa-users"></i> Dostlarını dəvət et, 5% referal bonusu qazan. 🤝</div>
+        <div class="info-box"><i class="fas fa-crown"></i> VIP statusla günlük limitləri ikiqat artır. 👑</div>
+    </div>
+
+    <div class="auth-container">
+        <div class="card" id="loginCard">
+            <h2>Giriş</h2>
+            <div class="input-group"><i class="fas fa-user" style="position:absolute; left:15px; top:15px; color:#8b9bb4;"></i><input type="text" id="loginUser" placeholder="İstifadəçi adı"></div>
+            <div class="input-group"><i class="fas fa-lock" style="position:absolute; left:15px; top:15px; color:#8b9bb4;"></i><input type="password" id="loginPass" placeholder="Şifrə"></div>
+            <button class="btn-primary" onclick="handleLogin()">GİRİŞ ET</button>
+            <div style="margin-top:15px; color:#8b9bb4; font-size:13px;">Hesabınız yoxdur? <a href="#" onclick="showCard('registerCard')" style="color:#FFD700;">Qeydiyyat</a></div>
+        </div>
+
+        <div class="card hidden" id="registerCard">
+            <h2>Qeydiyyat</h2>
+            <div class="input-group"><input type="text" id="regName" placeholder="Ad"></div>
+            <div class="input-group"><input type="text" id="regSurname" placeholder="Soyad"></div>
+            <div class="input-group"><input type="email" id="regEmail" placeholder="Gmail"></div>
+            <div class="input-group"><input type="password" id="regPass1" placeholder="Şifrə"></div>
+            <button class="btn-primary" onclick="handleRegister()">QEYDİYYATDAN KEÇ</button>
+            <div style="margin-top:15px; color:#8b9bb4; font-size:13px;">Artıq üzvsiniz? <a href="#" onclick="showCard('loginCard')" style="color:#FFD700;">Giriş</a></div>
+        </div>
+    </div>
 
     <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
+        const tg = window.Telegram.WebApp; tg.expand();
+        function showCard(id) {
+            document.getElementById('loginCard').classList.add('hidden');
+            document.getElementById('registerCard').classList.add('hidden');
+            document.getElementById(id).classList.remove('hidden');
+        }
+        function handleLogin() { alert("Giriş uğurludur!"); }
+        function handleRegister() { alert("Qeydiyyat tamamlandı!"); }
         
-        // Qızıl pul animasiyası
-        const rain = document.getElementById('goldRain');
+        const container = document.getElementById('moneyRain');
         for(let i=0; i<15; i++) {
-            let c = document.createElement('div');
-            c.innerHTML = '🪙'; c.className = 'g-coin';
-            c.style.left = Math.random()*100 + 'vw';
-            c.style.animationDuration = (Math.random()*4+4) + 's';
-            c.style.animationDelay = Math.random()*5 + 's';
-            rain.appendChild(c);
+            let c = document.createElement('div'); c.innerHTML = '🪙'; c.className = 'coin';
+            c.style.left = Math.random()*100 + 'vw'; c.style.animationDuration = (Math.random()*5+5) + 's';
+            container.appendChild(c);
         }
     </script>
 </body>

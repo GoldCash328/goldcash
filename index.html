@@ -3,441 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Premium Mini App</title>
+    <title>Gold Cash Premium</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
-            --bg-color: #0a0e17; /* Çox tünd mavi/qara fon */
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --primary-color: #007bff; /* Paralayan mavi */
+            --bg-color: #0a0e17;
+            --gold: #FFD700;
+            --card-bg: rgba(255, 255, 255, 0.05);
             --text-color: #ffffff;
-            --text-secondary: #8b9bb4;
-            --border-color: rgba(255, 255, 255, 0.08);
-            --success-color: #28a745;
-            --error-color: #dc3545;
         }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-            outline: none;
+        body { margin: 0; padding: 20px; font-family: sans-serif; background-color: var(--bg-color); color: var(--text-color); overflow-x: hidden; }
+
+        /* Qızılı Başlıq */
+        .gold-header { 
+            text-align: center; font-size: 36px; font-weight: 800; 
+            color: var(--gold); text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
+            margin: 20px 0; letter-spacing: 2px;
         }
 
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: var(--bg-color);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            color: var(--text-color);
-        }
-
-        /* Qəşəng Şəffaf Pul Animasiyası */
-        .money-rain {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .coin {
-            position: absolute;
-            font-size: 20px;
-            opacity: 0;
-            animation: fallAndFade linear forwards;
-            color: rgba(255, 255, 255, 0.4); /* Şəffaf ağ/gümüşü */
-        }
-
-        @keyframes fallAndFade {
-            0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
-            10% { opacity: 0.15; }
-            90% { opacity: 0.15; }
-            100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
-        }
-
-        /* Əsas Konteyner */
-        .auth-container {
-            position: relative;
-            z-index: 10;
-            width: 90%;
-            max-width: 400px;
-            perspective: 1000px;
-        }
-
-        /* Kart Stili (Glassmorphism) */
-        .card {
+        /* Ağ Çərçivəli Məlumatlar */
+        .info-box {
             background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 40px 30px;
-            border-radius: 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
-            text-align: center;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px; border-radius: 15px; margin-bottom: 12px;
+            display: flex; align-items: center; gap: 15px;
         }
+        .info-box i { font-size: 22px; color: var(--gold); }
 
-        .hidden {
-            display: none !important;
-            opacity: 0;
-            transform: scale(0.9) translateY(20px);
+        /* Düymə */
+        button {
+            width: 100%; padding: 18px; border-radius: 12px; border: none;
+            background: var(--gold); color: #000; font-weight: bold;
+            cursor: pointer; transition: 0.2s; font-size: 16px;
         }
+        button:active { transform: scale(0.96); box-shadow: 0 0 15px var(--gold); }
 
-        /* Başlıqlar */
-        h2 {
-            margin: 0 0 10px 0;
-            font-size: 28px;
-            font-weight: 700;
-            background: linear-gradient(135deg, #fff 0%, #a5c7ff 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p.subtitle {
-            color: var(--text-secondary);
-            margin: 0 0 30px 0;
-            font-size: 15px;
-        }
-
-        /* Input Sahələri */
-        .input-group {
-            position: relative;
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .input-group i.input-icon {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            font-size: 18px;
-            transition: 0.3s;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 16px 15px 16px 50px;
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            background: rgba(0, 0, 0, 0.2);
-            color: var(--text-color);
-            font-size: 16px;
-            transition: 0.3s;
-        }
-
-        .input-group input:focus {
-            border-color: var(--primary-color);
-            box-shadow: 0 0 10px rgba(0, 123, 255, 0.2);
-        }
-
-        .input-group input:focus + i.input-icon {
-            color: var(--primary-color);
-        }
-
-        /* Şifrəni Göstər/Gizlə İkonu */
-        .toggle-password {
-            position: absolute;
-            right: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--text-secondary);
-            cursor: pointer;
-            padding: 5px;
-            z-index: 2;
-        }
-
-        /* Düymələr */
-        button.btn-primary {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: none;
-            background: var(--primary-color);
-            color: white;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 10px;
-        }
-
-        button.btn-primary:active {
-            transform: scale(0.97);
-            background: #0069d9;
-        }
-
-        /* Linklər */
-        .footer-links {
-            margin-top: 25px;
-            font-size: 14px;
-            color: var(--text-secondary);
-        }
-
-        .footer-links a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        /* Şifrə Tələbləri Vizualı */
-        .password-policies {
-            text-align: left;
-            font-size: 13px;
-            color: var(--text-secondary);
-            margin-top: -10px;
-            margin-bottom: 20px;
-            padding-left: 5px;
-        }
-        .policy-item { margin: 5px 0; display: flex; align-items: center; }
-        .policy-item i { margin-right: 8px; font-size: 12px; }
-        .policy-item.valid { color: var(--success-color); }
-        .policy-item.invalid { color: var(--text-secondary); }
-
+        /* Qızıl Pul Animasiyası */
+        .gold-rain { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; }
+        .g-coin { position: absolute; font-size: 24px; animation: fall linear infinite; color: var(--gold); opacity: 0.3; }
+        @keyframes fall { to { transform: translateY(100vh) rotate(360deg); } }
     </style>
 </head>
 <body>
 
-    <div class="money-rain" id="moneyRain"></div>
+    <div class="gold-rain" id="goldRain"></div>
+    
+    <div class="gold-header">GOLD CASH</div>
 
-    <div class="auth-container">
-        
-        <div class="card" id="loginCard">
-            <h2>Giriş</h2>
-            <p class="subtitle">Davam etmək üçün hesabınıza daxil olun</p>
-            
-            <div class="input-group">
-                <i class="fas fa-user input-icon"></i>
-                <input type="text" id="loginUser" placeholder="İstifadəçi adı">
-            </div>
-            
-            <div class="input-group">
-                <i class="fas fa-lock input-icon"></i>
-                <input type="password" id="loginPass" placeholder="Şifrə">
-                <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPass', this)"></i>
-            </div>
-            
-            <button class="btn-primary" onclick="handleLogin()">Giriş et</button>
-            
-            <div class="footer-links">
-                Hesabınız yoxdur? <a href="#" onclick="showCard('registerCard')">Qeydiyyatdan keçin</a>
-            </div>
-        </div>
+    <div class="info-box"><i class="fas fa-coins"></i> <span>Gündəlik yatırımla 15% stabil gəlir! 💰</span></div>
+    <div class="info-box"><i class="fas fa-lock"></i> <span>Maliyyə əməliyyatları tam qorunur! 🛡️</span></div>
+    <div class="info-box"><i class="fas fa-user-plus"></i> <span>Hər dost dəvətinə 5% bonus qazan! 🤝</span></div>
+    <div class="info-box"><i class="fas fa-crown"></i> <span>VIP statusla limitləri ikiqat artır! 👑</span></div>
 
-        <div class="card hidden" id="registerCard">
-            <h2>Qeydiyyat</h2>
-            <p class="subtitle">Yeni hesab yaradın</p>
-            
-            <div style="display: flex; gap: 10px;">
-                <div class="input-group">
-                    <i class="fas fa-id-card input-icon"></i>
-                    <input type="text" id="regName" placeholder="Ad">
-                </div>
-                <div class="input-group">
-                    <input type="text" id="regSurname" placeholder="Soyad" style="padding-left: 15px;">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <i class="fas fa-envelope input-icon"></i>
-                <input type="email" id="regEmail" placeholder="Gmail ünvanı">
-            </div>
-            
-            <div class="input-group">
-                <i class="fas fa-key input-icon"></i>
-                <input type="password" id="regPass1" placeholder="Şifrə yaradın" oninput="validatePassword()">
-                <i class="fas fa-eye toggle-password" onclick="togglePassword('regPass1', this)"></i>
-            </div>
-
-            <div class="password-policies">
-                <div class="policy-item invalid" id="pol-length"><i class="fas fa-circle"></i>Min. 8 simvol</div>
-                <div class="policy-item invalid" id="pol-upper"><i class="fas fa-circle"></i>Min. 1 böyük hərf</div>
-                <div class="policy-item invalid" id="pol-number"><i class="fas fa-circle"></i>Min. 1 rəqəm</div>
-                <div class="policy-item invalid" id="pol-symbol"><i class="fas fa-circle"></i>Min. 1 simvol (!@#$)</div>
-            </div>
-            
-            <div class="input-group">
-                <i class="fas fa-check-double input-icon"></i>
-                <input type="password" id="regPass2" placeholder="Şifrəni təkrarla">
-            </div>
-            
-            <button class="btn-primary" onclick="handleRegister()">Tamamla</button>
-            
-            <div class="footer-links">
-                Artıq üzvsiniz? <a href="#" onclick="showCard('loginCard')">Giriş edin</a>
-            </div>
-        </div>
-    </div>
+    <button onclick="alert('Yatırım bölməsinə yönləndirilirsiniz...')">YATIRIM ET VƏ QAZAN</button>
 
     <script>
-        // Telegram WebApp Başlatma
         const tg = window.Telegram.WebApp;
         tg.expand();
-        tg.ready();
-        // Botun mövzusuna uyğun rəngləri tənzimləmək olar (istəyə bağlı)
-        // tg.setHeaderColor(getComputedStyle(document.documentElement).getPropertyValue('--bg-color').trim());
-
-        // --- UNİVERSAL FUNKSİYALAR ---
-
-        // Kartlar arası keçid
-        function showCard(cardId) {
-            document.getElementById('loginCard').classList.add('hidden');
-            document.getElementById('registerCard').classList.add('hidden');
-            const target = document.getElementById(cardId);
-            target.classList.remove('hidden');
-            tg.HapticFeedback.impactOccurred('light'); // Yüngül vibrasiya
+        
+        // Qızıl pul animasiyası
+        const rain = document.getElementById('goldRain');
+        for(let i=0; i<15; i++) {
+            let c = document.createElement('div');
+            c.innerHTML = '🪙'; c.className = 'g-coin';
+            c.style.left = Math.random()*100 + 'vw';
+            c.style.animationDuration = (Math.random()*4+4) + 's';
+            c.style.animationDelay = Math.random()*5 + 's';
+            rain.appendChild(c);
         }
-
-        // Şifrəni göstər/gizlə
-        function togglePassword(inputId, iconEl) {
-            const input = document.getElementById(inputId);
-            if (input.type === "password") {
-                input.type = "text";
-                iconEl.classList.remove('fa-eye');
-                iconEl.classList.add('fa-eye-slash');
-            } else {
-                input.type = "password";
-                iconEl.classList.remove('fa-eye-slash');
-                iconEl.classList.add('fa-eye');
-            }
-        }
-
-        // --- QEYDİYYAT VALİDASİYASI (Sizin istədiyiniz mürəkkəb qaydalar) ---
-        let isPasswordValid = false;
-
-        function validatePassword() {
-            const pass = document.getElementById('regPass1').value;
-            
-            const policies = {
-                length: pass.length >= 8,
-                upper: /[A-Z]/.test(pass),
-                number: /[0-9]/.test(pass),
-                symbol: /[!@#$%^&*(),.?":{}|<>]/.test(pass)
-            };
-
-            // Vizual yeniləmə
-            updatePolicyView('pol-length', policies.length);
-            updatePolicyView('pol-upper', policies.upper);
-            updatePolicyView('pol-number', policies.number);
-            updatePolicyView('pol-symbol', policies.symbol);
-
-            isPasswordValid = policies.length && policies.upper && policies.number && policies.symbol;
-        }
-
-        function updatePolicyView(elId, isValid) {
-            const el = document.getElementById(elId);
-            const icon = el.querySelector('i');
-            if(isValid) {
-                el.classList.remove('invalid');
-                el.classList.add('valid');
-                icon.classList.remove('fa-circle');
-                icon.classList.add('fa-check-circle');
-            } else {
-                el.classList.remove('valid');
-                el.classList.add('invalid');
-                icon.classList.remove('fa-check-circle');
-                icon.classList.add('fa-circle');
-            }
-        }
-
-        // --- BİZNES MƏNTİQİ (Hələlik alert ilə, sonra bazaya bağlanacaq) ---
-
-        function handleLogin() {
-            const user = document.getElementById('loginUser').value;
-            const pass = document.getElementById('loginPass').value;
-
-            if(!user || !pass) {
-                tg.HapticFeedback.notificationOccurred('error');
-                alert("Xanaları doldurun!");
-                return;
-            }
-
-            // Nümunə yoxlama
-            if(user === "admin" && pass === "Admin123!") {
-                tg.HapticFeedback.notificationOccurred('success');
-                alert("Giriş uğurludur! Ana səhifəyə yönləndirilir...");
-                tg.close(); // Və ya ana səhifəni göstər
-            } else {
-                tg.HapticFeedback.notificationOccurred('error');
-                alert("İstifadəçi adı və ya şifrə səhvdir!");
-            }
-        }
-
-        function handleRegister() {
-            const name = document.getElementById('regName').value;
-            const surname = document.getElementById('regSurname').value;
-            const email = document.getElementById('regEmail').value;
-            const pass1 = document.getElementById('regPass1').value;
-            const pass2 = document.getElementById('regPass2').value;
-
-            if(!name || !surname || !email || !pass1 || !pass2) {
-                alert("Bütün xanaları doldurun!");
-                tg.HapticFeedback.notificationOccurred('error');
-                return;
-            }
-
-            // Gmail yoxlaması (sadə)
-            if(!email.includes('@gmail.com')) {
-                alert("Zəhmət olmasa düzgün Gmail ünvanı daxil edin.");
-                return;
-            }
-
-            // Mürəkkəb şifrə yoxlaması
-            if(!isPasswordValid) {
-                alert("Şifrə tələblərə cavab vermir!");
-                return;
-            }
-
-            // Şifrə təkrarı yoxlaması
-            if(pass1 !== pass2) {
-                alert("Şifrələr üst-üstə düşmür!");
-                return;
-            }
-
-            tg.HapticFeedback.notificationOccurred('success');
-            alert("Qeydiyyat uğurludur! İndi giriş edə bilərsiniz.");
-            showCard('loginCard');
-        }
-
-
-        // --- ESTETİK: Pul Yağışı Animasiyası (Daha professional) ---
-        function createMoney() {
-            const container = document.getElementById('moneyRain');
-            // Gümüşü/şəffaf ikonlar
-            const icons = ['&#xf155;', '&#xf0d6;', '&#xf51e;']; // $, billete, coins
-            
-            setInterval(() => {
-                const coin = document.createElement('i');
-                coin.className = 'fas coin';
-                coin.innerHTML = icons[Math.floor(Math.random() * icons.length)];
-                
-                // Random pozisiya və ölçü
-                const startLeft = Math.random() * 100;
-                const size = Math.random() * 15 + 15; // 15px - 30px
-                const duration = Math.random() * 4 + 3; // 3s - 7s
-                
-                coin.style.left = startLeft + 'vw';
-                coin.style.fontSize = size + 'px';
-                coin.style.animationDuration = duration + 's';
-                
-                // Random xəfif horizontal hərəkət
-                coin.style.setProperty('--end-x', (Math.random() * 20 - 10) + 'vw');
-
-                container.appendChild(coin);
-                
-                // Animasiya bitəndə sil
-                setTimeout(() => { coin.remove(); }, duration * 1000);
-            }, 600); // Hər 0.6 saniyədən bir yeni pul
-        }
-
-        // Başlat
-        createMoney();
     </script>
 </body>
 </html>
